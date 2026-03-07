@@ -1,8 +1,8 @@
 # rust_physics
 
-A high-performance 2D physics engine written in Rust, built from scratch as part of a learning journey toward becoming a **Game Designer** and **System Architect**.
+A high-performance 2D physics engine written in Rust, built from scratch as part of a learning journey toward becoming a **Game Designer** and **Full-Stack System Architect**.
 
-This project explores the fundamentals of real-time physics simulation — rigid body dynamics, numerical integration, and collision detection — with a focus on correctness, performance, and idiomatic Rust.
+This project explores the fundamentals of real-time physics simulation — rigid body dynamics, numerical integration, and collision detection — with a focus on correctness, performance, and idiomatic Rust. It also serves as the backend core of a broader stack: Rust simulation → JSON export → React dashboard → Claude AI agent.
 
 ---
 
@@ -11,19 +11,20 @@ This project explores the fundamentals of real-time physics simulation — rigid
 - Implement a 2D physics engine using **Euler integration** as the foundational numerical method
 - Build a solid understanding of the math and systems design behind game engines
 - Develop fluency in Rust's ownership model, type system, and zero-cost abstractions
-- Serve as a portfolio piece demonstrating low-level systems thinking and engineering discipline
+- Build a **React dashboard** to visualize simulation trajectories in real time
+- Integrate a **Claude/LLM agent** to analyze simulation output and optimize physics parameters
+- Serve as a portfolio piece demonstrating full-stack systems thinking and engineering discipline
 
 ---
 
 ## Roadmap
 
-- [x] Project scaffolding
-- [ ] Vec2 math primitives (dot product, normalization, magnitude)
-- [ ] Rigid body representation (position, velocity, acceleration, mass)
-- [ ] Euler integration step
-- [ ] AABB collision detection
-- [ ] Collision response and impulse resolution
-- [ ] Broadphase optimization
+- [x] **Core Physics** — Euler integration, mass, forces (gravity, drag)
+- [ ] **Math Primitives** — dot product, normalization, magnitude (Vec2)
+- [ ] **React Visualization** — real-time trajectory dashboard consuming Rust output
+- [ ] **AI Agent Integration** — Claude/LLM agent to analyze simulation data and tune physics parameters
+- [ ] **Collision Detection** — AABB (Axis-Aligned Bounding Boxes)
+- [ ] **Export System** — JSON / MessagePack output for Unity or Web integration
 
 ---
 
@@ -91,6 +92,10 @@ It is not the most accurate method (compared to Verlet or Runge-Kutta), but it i
 ### Why Rust?
 
 Rust provides memory safety without a garbage collector, making it well suited for real-time simulation where predictable performance matters. Its type system enforces correctness at compile time, which helps catch physics logic errors early.
+
+### Why this stack?
+
+The full pipeline is: **Rust** computes the simulation and exports trajectory data as JSON → **React** consumes that data to render live visualizations → a **Claude agent** reads the results and suggests parameter adjustments. Each layer is independently replaceable, which makes the architecture easy to extend (e.g. swapping the export format for MessagePack for Unity integration).
 
 ---
 
