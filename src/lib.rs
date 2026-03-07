@@ -30,6 +30,12 @@ impl Body{
         self.acceleration.y += force_y / self.mass;
     }
 
+    pub fn apply_drag(&mut self, k:f64){
+        let force_x = -k * self.velocity.x;
+        let force_y = -k * self.velocity.y;
+        self.apply_force(force_x, force_y);
+    }
+
     pub fn update(&mut self, dt: f64){
         self.velocity.x += self.acceleration.x * dt;
         self.velocity.y += self.acceleration.y * dt;
@@ -61,4 +67,19 @@ mod tests {
         assert!((ball.position.y - 90.19).abs() < 0.001);
         assert!((ball.velocity.y - (-9.81)).abs() < 0.001);
     }
+
+    #[test]
+fn test_drag_effect() {
+    let mut ball = Body::new(1.0, Vector2D { x: 0.0, y: 0.0 });
+    ball.velocity.x = 10.0; // La palla parte veloce verso destra
+    
+    // Applichiamo un coefficiente di attrito
+    ball.apply_drag(0.5); 
+    ball.update(1.0);
+
+    // Senza attrito, dopo 1s la velocità sarebbe ancora 10.0.
+    // Con l'attrito deve essere calata.
+    assert!(ball.velocity.x < 10.0, "La velocità dovrebbe essere diminuita a causa del drag");
+    assert!(ball.velocity.x > 0.0, "L'attrito non dovrebbe aver invertito la marcia");
+}
 }
