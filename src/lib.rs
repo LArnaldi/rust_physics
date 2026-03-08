@@ -1,5 +1,5 @@
 use serde::Serialize;
-use std::ops::{Add, AddAssign, Mul};
+use std::ops::{Add, AddAssign, Mul, MulAssign};
 
 /// A 2D vector used to represent positions, velocities, and forces.
 /// Components are in SI units (metres, m/s, Newtons) depending on context.
@@ -83,6 +83,13 @@ impl Mul<f64> for Vector2D {
     }
 }
 
+impl MulAssign<f64> for Vector2D {
+    fn mul_assign(&mut self, scalar: f64) {
+        self.x *= scalar;
+        self.y *= scalar;
+    }
+}
+
 impl Body {
     /// Creates a body at rest (v = 0, a = 0) with the given mass and initial position.
     pub fn new(mass: f64, position: Vector2D) -> Self {
@@ -130,6 +137,10 @@ impl Body {
             || self_right <= other_left
             || self_top <= other_bottom
             || self_bottom >= other_top)
+    }
+
+    pub fn resolve_collision(&mut self, other: &Body){
+        self.velocity *= -0.8;
     }
 
     /// Advances the simulation by one time step `dt` using Euler integration.
