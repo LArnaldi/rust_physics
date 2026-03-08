@@ -1,5 +1,5 @@
-use std::ops::{Add, AddAssign, Mul};
 use serde::Serialize;
+use std::ops::{Add, AddAssign, Mul};
 
 /// A 2D vector used to represent positions, velocities, and forces.
 /// Components are in SI units (metres, m/s, Newtons) depending on context.
@@ -17,6 +17,8 @@ pub struct Body {
     pub position: Vector2D,
     pub velocity: Vector2D,
     pub acceleration: Vector2D,
+    pub width: f64,
+    pub height: f64,
 }
 
 impl Vector2D {
@@ -70,7 +72,7 @@ impl AddAssign for Vector2D {
     }
 }
 
-impl Mul<f64> for Vector2D{
+impl Mul<f64> for Vector2D {
     type Output = Self;
 
     fn mul(self, scalar: f64) -> Self {
@@ -89,6 +91,8 @@ impl Body {
             position,
             velocity: Vector2D { x: 0.0, y: 0.0 },
             acceleration: Vector2D { x: 0.0, y: 0.0 },
+            width: 1.0,
+            height: 1.0,
         }
     }
 
@@ -110,6 +114,22 @@ impl Body {
     /// `k` is the drag coefficient [N·s/m].
     pub fn apply_drag(&mut self, k: f64) {
         self.apply_force(self.velocity * (-k));
+    }
+
+    pub fn collides_with(&self, other: &Body) -> bool {
+        let self_left = self.position.x - self.width / 2.0;
+        let self_right = self.position.x + self.width / 2.0;
+        let self_top = self.position.y + self.height / 2.0;
+        let self_bottom = self.position.y - self.height / 2.0;
+        let other_left = other.position.x - other.width / 2.0;
+        let other_right = other.position.x + other.width / 2.0;
+        let other_top = other.position.y + other.height / 2.0;
+        let other_bottom = other.position.y - other.height / 2.0;
+
+        !(self_left >= other_right
+            || self_right <= other_left
+            || self_top <= other_bottom
+            || self_bottom >= other_top)
     }
 
     /// Advances the simulation by one time step `dt` using Euler integration.
@@ -185,5 +205,23 @@ mod tests {
     fn test_vector_magnitude() {
         let v = Vector2D { x: 3.0, y: 4.0 };
         assert_eq!(v.magnitude(), 5.0);
+    }
+
+    #[test]
+    fn test_aabb_collision() {
+        let mut a = Body::new(1.0, Vector2D { x: 0.0, y: 0.0 });
+        a.width = 10.0;
+        a.height = 10.0;
+
+        let mut b = Body::new(1.0, Vector2D { x: 5.0, y: 5.0 }); // Questo è dentro A
+        b.width = 10.0;
+        b.height = 10.0;
+
+        let mut c = Body::new(1.0, Vector2D { x: 20.0, y: 20.0 }); // Questo è lontano
+        c.width = 10.0;
+        c.height = 10.0;
+
+        assert!(a.collides_with(&b), "A e B dovrebbero collidere");
+        assert!(!a.collides_with(&c), "A e C NON dovrebbero collidere");
     }
 }
